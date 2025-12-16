@@ -3,7 +3,7 @@ import type { AgeRange, Mood, Question, TrackerEntry, Answer } from '../types';
 
 // 172.16.10.131 is your machine's local IP detected from Expo logs. 
 // This allows both Emulators and Physical Devices (on same Wifi) to connect.
-const BASE_URL = 'http://172.16.10.131:5000/api';
+const BASE_URL = 'http://172.16.18.228:5000/api';
 
 export const api = {
     // Health Check

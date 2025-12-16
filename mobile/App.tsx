@@ -10,14 +10,18 @@ import AskQuestion from './components/AskQuestion';
 import EssentialsScreen from './components/EssentialsScreen';
 import ReflectionScreen from './components/ReflectionScreen';
 import BottomNav from './components/BottomNav';
+import EssentialsDetailScreen from './components/EssentialsDetailScreen';
+import ReproductiveHealthScreen from './components/ReproductiveHealthScreen';
+import StainRemovalScreen from './components/StainRemovalScreen';
 import type { AgeRange, TrackerEntry, Question, Mood } from './types';
 import { api } from './services/api';
 
 export default function App() {
     const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
     const [ageRange, setAgeRange] = useState<AgeRange>(null);
-    const [currentScreen, setCurrentScreen] = useState<'tracker' | 'feed' | 'ask' | 'essentials' | 'reflection'>('tracker');
+    const [currentScreen, setCurrentScreen] = useState<'tracker' | 'feed' | 'ask' | 'essentials' | 'reflection' | 'essentialsDetail' | 'reproductiveHealth' | 'stainRemoval'>('tracker');
     const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
+    const [selectedEssentialId, setSelectedEssentialId] = useState<string | null>(null);
     const [trackerData, setTrackerData] = useState<TrackerEntry[]>([]);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [userId, setUserId] = useState<string>('');
@@ -176,6 +180,25 @@ export default function App() {
         }
     };
 
+    // Essentials Navigation
+    const handleSelectProduct = (id: string) => {
+        setSelectedEssentialId(id);
+        setCurrentScreen('essentialsDetail');
+    };
+
+    const handleSelectHealth = () => {
+        setCurrentScreen('reproductiveHealth');
+    };
+
+    const handleSelectStainRemoval = () => {
+        setCurrentScreen('stainRemoval');
+    };
+
+    const handleBackToEssentials = () => {
+        setSelectedEssentialId(null);
+        setCurrentScreen('essentials');
+    };
+
     // Render logic
     if (!hasSeenWelcome) {
         return <WelcomeScreen onContinue={handleContinueFromWelcome} />;
@@ -184,6 +207,9 @@ export default function App() {
     if (!ageRange) {
         return <AgeSelection onSelectAge={handleAgeSelect} />;
     }
+
+    const isEssentialsDetail = ['essentialsDetail', 'reproductiveHealth', 'stainRemoval'].includes(currentScreen);
+    const shouldHideBottomNav = selectedQuestionId || isEssentialsDetail;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -213,7 +239,25 @@ export default function App() {
                         {currentScreen === 'ask' && (
                             <AskQuestion onPostQuestion={handlePostQuestion} />
                         )}
-                        {currentScreen === 'essentials' && <EssentialsScreen />}
+                        {currentScreen === 'essentials' && (
+                            <EssentialsScreen
+                                onSelectProduct={handleSelectProduct}
+                                onSelectHealth={handleSelectHealth}
+                                onSelectStainRemoval={handleSelectStainRemoval}
+                            />
+                        )}
+                        {currentScreen === 'essentialsDetail' && selectedEssentialId && (
+                            <EssentialsDetailScreen
+                                essentialId={selectedEssentialId}
+                                onBack={handleBackToEssentials}
+                            />
+                        )}
+                        {currentScreen === 'reproductiveHealth' && (
+                            <ReproductiveHealthScreen onBack={handleBackToEssentials} />
+                        )}
+                        {currentScreen === 'stainRemoval' && (
+                            <StainRemovalScreen onBack={handleBackToEssentials} />
+                        )}
                         {currentScreen === 'reflection' && (
                             <ReflectionScreen trackerData={trackerData} questions={questions} />
                         )}
@@ -221,8 +265,8 @@ export default function App() {
                 )}
             </View>
 
-            {!selectedQuestionId && (
-                <BottomNav currentScreen={currentScreen} onNavigate={handleNavigate} />
+            {!shouldHideBottomNav && (
+                <BottomNav currentScreen={currentScreen as any} onNavigate={handleNavigate} />
             )}
         </SafeAreaView>
     );
