@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Secrets
+.env
+backend/*adminsdk*.json
+google-services.json
+
+# Expo
+.expo/
+dist/
+build/
+
+# OS
+.DS_Store
