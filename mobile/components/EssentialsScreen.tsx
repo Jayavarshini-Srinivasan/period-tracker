@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { essentialsContent } from '../data/essentialsContent';
 
 interface Props {
@@ -47,11 +47,15 @@ export default function EssentialsScreen({ onSelectProduct, onSelectHealth, onSe
                     >
                         <View style={styles.cardHeader}>
                             <View style={styles.iconContainer}>
-                                <Text style={styles.icon}>{essential.icon}</Text>
+                                {essential.image ? (
+                                    <Image source={essential.image} style={styles.productImage} resizeMode="cover" />
+                                ) : (
+                                    <Text style={styles.icon}>{essential.icon}</Text>
+                                )}
                             </View>
                             <View style={styles.titleContainer}>
                                 <Text style={styles.title}>{essential.title}</Text>
-                                <Text style={styles.description}>{essential.description}</Text>
+                                <Text style={styles.description}>{essential.teaser}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -159,12 +163,17 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     iconContainer: {
-        width: 48,
-        height: 48,
+        width: 60,
+        height: 60,
         backgroundColor: '#faf5ff',
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
+        overflow: 'hidden', // Ensure image respects border radius
+    },
+    productImage: {
+        width: '100%',
+        height: '100%',
     },
     icon: {
         fontSize: 24,

@@ -1,6 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { essentialsContent } from '../data/essentialsContent';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 interface Props {
     onBack: () => void;
@@ -8,6 +12,12 @@ interface Props {
 
 export default function StainRemovalScreen({ onBack }: Props) {
     const tips = essentialsContent.stainRemoval;
+    const [expandedId, setExpandedId] = useState<string | null>(null);
+
+    const toggleExpand = (id: string) => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setExpandedId(expandedId === id ? null : id);
+    };
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -19,24 +29,59 @@ export default function StainRemovalScreen({ onBack }: Props) {
                 <Text style={styles.headerTitle}>Stain Removal Tips</Text>
             </View>
 
-            <View style={styles.introBox}>
-                <Text style={styles.introText}>
-                    Stains happen to everyone. It's completely normal and nothing to be embarrassed about. Here are some simple ways to handle them.
-                </Text>
-            </View>
-
             <View style={styles.grid}>
-                {tips.map((tip, index) => (
-                    <View key={index} style={styles.card}>
-                        <View style={styles.numberCircle}>
-                            <Text style={styles.number}>{index + 1}</Text>
+                {tips.map((tip, index) => {
+                    const isReassurance = tip.id === 'reassurance';
+                    const isExpanded = expandedId === tip.id;
+
+                    if (isReassurance) {
+                        return (
+                            <View key={tip.id} style={styles.reassuranceCard}>
+                                <Text style={styles.reassuranceIcon}>💛</Text>
+                                <Text style={styles.reassuranceText}>{tip.goodToKnow}</Text>
+                            </View>
+                        );
+                    }
+
+                    return (
+                        <View key={tip.id} style={styles.card}>
+                            <TouchableOpacity
+                                style={styles.cardHeader}
+                                onPress={() => toggleExpand(tip.id)}
+                                activeOpacity={0.7}
+                            >
+                                <View style={styles.titleContainer}>
+                                    <Text style={styles.tipTitle}>{tip.title}</Text>
+                                    {tip.subtitle ? <Text style={styles.tipSubtitle}>{tip.subtitle}</Text> : null}
+                                </View>
+                                <Text style={[styles.chevron, isExpanded && styles.chevronRotated]}>⌄</Text>
+                            </TouchableOpacity>
+
+                            {isExpanded && (
+                                <View style={styles.cardContent}>
+                                    {/* Steps */}
+                                    <View style={styles.stepsContainer}>
+                                        <Text style={styles.sectionLabel}>Steps:</Text>
+                                        {tip.steps.map((step, i) => (
+                                            <View key={i} style={styles.stepRow}>
+                                                <View style={styles.bullet} />
+                                                <Text style={styles.stepText}>{step}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+
+                                    {/* Good to know */}
+                                    {tip.goodToKnow && (
+                                        <View style={styles.goodToKnowBox}>
+                                            <Text style={styles.goodToKnowLabel}>Good to know:</Text>
+                                            <Text style={styles.goodToKnowText}>{tip.goodToKnow}</Text>
+                                        </View>
+                                    )}
+                                </View>
+                            )}
                         </View>
-                        <View style={styles.textContainer}>
-                            <Text style={styles.tipTitle}>{tip.title}</Text>
-                            <Text style={styles.tipText}>{tip.text}</Text>
-                        </View>
-                    </View>
-                ))}
+                    );
+                })}
             </View>
 
         </ScrollView>
@@ -50,6 +95,7 @@ const styles = StyleSheet.create({
     },
     content: {
         padding: 24,
+        paddingBottom: 40,
     },
     header: {
         flexDirection: 'row',
@@ -71,59 +117,112 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#581c87',
     },
-    introBox: {
-        marginBottom: 32,
-        backgroundColor: '#fff',
-        padding: 24,
-        borderRadius: 20,
-        borderLeftWidth: 4,
-        borderLeftColor: '#c084fc',
-    },
-    introText: {
-        fontSize: 16,
-        color: '#6b21a8',
-        lineHeight: 24,
-    },
     grid: {
         gap: 16,
     },
     card: {
         backgroundColor: 'white',
-        padding: 20,
         borderRadius: 20,
-        flexDirection: 'row',
-        gap: 16,
-        alignItems: 'flex-start',
         shadowColor: '#000',
         shadowOpacity: 0.03,
         shadowRadius: 4,
         elevation: 1,
+        overflow: 'hidden',
     },
-    numberCircle: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: '#f3e8ff',
+    cardHeader: {
+        padding: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        justifyContent: 'center',
     },
-    number: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#7e22ce',
-    },
-    textContainer: {
+    titleContainer: {
         flex: 1,
     },
     tipTitle: {
         fontSize: 18,
         fontWeight: '600',
         color: '#581c87',
+    },
+    tipSubtitle: {
+        fontSize: 14,
+        color: '#9333ea',
+        marginTop: 2,
+    },
+    chevron: {
+        fontSize: 24,
+        color: '#c084fc',
+        fontWeight: 'bold',
+        marginLeft: 16,
+    },
+    chevronRotated: {
+        transform: [{ rotate: '180deg' }],
+    },
+    cardContent: {
+        paddingHorizontal: 20,
+        paddingBottom: 24,
+        paddingTop: 0,
+    },
+    sectionLabel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#581c87',
+        marginBottom: 12,
+        opacity: 0.6,
+    },
+    stepsContainer: {
+        marginBottom: 20,
+    },
+    stepRow: {
+        flexDirection: 'row',
+        marginBottom: 12,
+        alignItems: 'flex-start',
+    },
+    bullet: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#d8b4fe',
+        marginTop: 8,
+        marginRight: 12,
+    },
+    stepText: {
+        fontSize: 16,
+        color: '#4b5563',
+        lineHeight: 24,
+        flex: 1,
+    },
+    goodToKnowBox: {
+        backgroundColor: '#F3E8FF',
+        padding: 16,
+        borderRadius: 16,
+    },
+    goodToKnowLabel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#7e22ce',
         marginBottom: 4,
     },
-    tipText: {
+    goodToKnowText: {
         fontSize: 15,
-        color: '#4b5563',
+        color: '#6b21a8',
         lineHeight: 22,
-    }
+    },
+    reassuranceCard: {
+        backgroundColor: '#fdf4ff', // Warmer/different tone for reassurance
+        padding: 24,
+        borderRadius: 20,
+        alignItems: 'center',
+        marginTop: 8,
+    },
+    reassuranceIcon: {
+        fontSize: 32,
+        marginBottom: 12,
+    },
+    reassuranceText: {
+        textAlign: 'center',
+        fontSize: 16,
+        color: '#86198f',
+        lineHeight: 24,
+        fontStyle: 'italic',
+    },
 });

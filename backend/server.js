@@ -66,9 +66,9 @@ app.post('/api/tracker', async (req, res) => {
 
   try {
     const data = schema.parse(req.body);
-    // We can store as a subcollection: users/{userId}/entries/{date}
+    // We can store as a subcollection: users/{userId}/checkins/{date}
     // This allows easy querying of "my entries"
-    const entryRef = db.collection('users').doc(data.userId).collection('entries').doc(data.date);
+    const entryRef = db.collection('users').doc(data.userId).collection('checkins').doc(data.date);
     
     await entryRef.set({
       ...data,
@@ -85,7 +85,7 @@ app.post('/api/tracker', async (req, res) => {
 // 5. Tracker: Get Entries
 app.get('/api/tracker/:userId', async (req, res) => {
   try {
-    const snapshot = await db.collection('users').doc(req.params.userId).collection('entries').get();
+    const snapshot = await db.collection('users').doc(req.params.userId).collection('checkins').get();
     const entries = [];
     snapshot.forEach(doc => entries.push(doc.data()));
     res.json(entries);

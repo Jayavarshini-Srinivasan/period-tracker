@@ -3,21 +3,32 @@ export const essentialsContent = {
         {
             id: 'pads',
             title: 'Pads',
+            teaser: 'Different options for different days', // NEW
             icon: '🤍',
-            image: require('../assets/pad.png'),
-            description: 'Worn inside your underwear to absorb flow.',
+            image: require('../assets/icon-pad.png'),
             sections: {
-                what: 'Pads are soft, absorbent layers that you stick to the inside of your underwear. They catch your period flow after it leaves your body.',
-                types: [
-                    'Thinner pads (for lighter days)',
-                    'Thicker / Maxi pads (for heavy flow)',
-                    'Pads with wings (to help them stay in place)',
-                    'Reusable cloth pads (washable)'
+                // ... (sections content unchanged)
+                // Orientation (What this is)
+                orientation: 'Pads are worn outside the body to absorb menstrual flow. They come in different shapes and sizes, and people choose them for different reasons.',
+
+                // Variations (Exploration)
+                variations: [
+                    { label: 'Thinner pads', desc: 'Some people use these on lighter days.' },
+                    { label: 'Thicker pads', desc: 'Often used for heavy flow or overnight.' },
+                    { label: 'With wings', desc: 'Wraps around underwear to stay in place.' },
+                    { label: 'Reusable', desc: 'Washable cloth options that last for years.' }
                 ],
-                usage: 'You peel off the backing strip and stick the pad to your underwear. People usually change them every 4-8 hours to stay comfortable and dry.',
-                why: 'Some people choose pads because they are easy to use and you don\'t have to insert anything inside your body.',
-                reminder: 'It takes a few tries to place it perfectly comfortable. That is totally normal.'
+
+                // Usage (Experience-based, NOT instructions)
+                usage: 'People usually change pads when they feel uncomfortable or when it feels full. This is often every 4 to 8 hours to stay dry.',
+
+                // Feeling (Emotional framing)
+                feeling: 'Some people feel more secure using pads because nothing goes inside the body. Others like that they are easy to check quickly.',
+
+                // Normalization (Reassurance)
+                normalization: 'There’s no "right" option — people switch preferences over time depending on what feels best.'
             },
+            // KEEPING TUTORIALS for hidden toggle
             tutorial: [
                 'Unwrap the pad from its wrapper',
                 'Peel off the paper backing strip to reveal the sticky side',
@@ -30,19 +41,19 @@ export const essentialsContent = {
         {
             id: 'tampons',
             title: 'Tampons',
+            teaser: 'Worn inside for freedom of movement',
             icon: '🔹',
-            image: require('../assets/tampon.png'),
-            description: 'Worn inside the body to absorb flow.',
+            image: require('../assets/tampoon.png'),
             sections: {
-                what: 'Tampons are small plugs made of soft cotton-like material. You gently insert them inside your vagina to absorb flow before it leaves your body.',
-                types: [
-                    'Applicator tampons (have a plastic or cardboard tube helper)',
-                    'Non-applicator tampons (you use your finger to push them in)',
-                    'Different absorbencies (Light, Regular, Super)'
+                orientation: 'Tampons are small plugs made of soft material that absorb flow inside the body before it leaves.',
+                variations: [
+                    { label: 'Applicator', desc: 'Has a smooth tube helper for insertion.' },
+                    { label: 'Non-applicator', desc: 'Uses your finger to guide it in (less waste).' },
+                    { label: 'different sizes', desc: 'Light, Regular, or Super absorbency.' }
                 ],
-                usage: 'You insert the tampon gently, leaving the string hanging outside so you can pull it out later. They should be changed every 4-8 hours.',
-                why: 'Some people like them because you can swim while wearing them, and they don\'t feel bulky in your underwear.',
-                reminder: 'If it hurts, it might be in slightly wrong, or you might be incorrect size. It is okay to take it out and try again later.'
+                usage: 'They are worn inside the vagina with a string hanging out. People usually change them every 4 to 8 hours.',
+                feeling: 'Some people prefer them because they aren\'t bulky. You can swim, run, and play sports without feeling them.',
+                normalization: 'It takes practice to get comfortable with them. If it hurts, it might just be the wrong angle.'
             },
             tutorial: [
                 'Wash your hands',
@@ -58,19 +69,19 @@ export const essentialsContent = {
         {
             id: 'cups',
             title: 'Menstrual Cups',
+            teaser: 'Reusable, longer-wear option',
             icon: '🏆',
-            image: require('../assets/cup.png'),
-            description: 'A small cup that collects flow instead of absorbing it.',
+            image: require('../assets/cups.png'),
             sections: {
-                what: 'A menstrual cup is a small, flexible bell-shaped cup usually made of silicone. It sits inside your vagina and collects the blood.',
-                types: [
-                    'Different sizes (usually A or B depending on age/birth history)',
-                    'Different firmness levels (soft vs firm)',
-                    'Different stem shapes (to help you grip it)'
+                orientation: 'A small flexible cup made of silicone. It sits inside the vagina and collects flow instead of absorbing it.',
+                variations: [
+                    { label: 'Soft vs Firm', desc: 'Softer can be more comfortable, firmer pops open easier.' },
+                    { label: 'Stem shapes', desc: 'Rings, stems, or balls to help grip for removal.' },
+                    { label: 'Sizes', desc: 'Usually Size A or B depending on age/birth history.' }
                 ],
-                usage: 'You fold the cup, insert it, and it pops open to create a seal. You take it out, empty it into the toilet, wash it, and put it back in.',
-                why: 'They are reusable for years (eco-friendly) and can be worn for up to 12 hours.',
-                reminder: 'There is a learning curve. Getting the hang of it can take a few cycles. Be patient with yourself.'
+                usage: 'It can be worn for up to 12 hours. You empty it into the toilet, rinse it, and put it back in.',
+                feeling: 'Many people like that they don\'t have to change it as often during the school day. It feels very clean.',
+                normalization: 'There is a learning curve. It is normal for it to take a few cycles to get the hang of it.'
             },
             tutorial: [
                 'Wash your hands and the cup',
@@ -86,18 +97,18 @@ export const essentialsContent = {
         {
             id: 'discs',
             title: 'Menstrual Discs',
+            teaser: 'Sits differently for anatomy-based fit',
             icon: '◎',
-            image: require('../assets/disc.png'),
-            description: 'Similar to cups but sits differently inside.',
+            image: require('../assets/disk.png'),
             sections: {
-                what: 'A disc collects flow like a cup but sits higher up, right under your cervix.',
-                types: [
-                    'Disposable discs (single use)',
-                    'Reusable silicone discs'
+                orientation: 'Similar to a cup but sits higher up, right under the cervix. It stays in place behind the pubic bone.',
+                variations: [
+                    { label: 'Disposable', desc: 'Single-use, looks like soft plastic film.' },
+                    { label: 'Reusable', desc: 'Silicone disc that lasts for years.' }
                 ],
-                usage: 'You pinch it in half and slide it back. To remove, you hook your finger under the rim and pull it out.',
-                why: 'Some people find them more comfortable than cups because they rely on anatomy rather than suction to stay in place.',
-                reminder: 'Removing them can be a little messier than pads. It helps to practice at home.'
+                usage: 'It can also be worn for 12 hours. Removal involves hooking a finger under the rim.',
+                feeling: 'Some people find them more comfortable than cups because they don\'t use suction to stay in place.',
+                normalization: 'Removal can be a little messier than pads at first. Practicing at home helps.'
             },
             tutorial: [
                 'Wash your hands',
@@ -112,19 +123,19 @@ export const essentialsContent = {
         {
             id: 'underwear',
             title: 'Period Underwear',
+            teaser: 'Feels just like regular clothes',
             icon: '🩲',
-            image: require('../assets/underwear.png'),
-            description: 'Underwear that absorbs flow directly.',
+            image: null,
             sections: {
-                what: 'These look and feel like regular underwear but have special absorbent layers built in.',
-                types: [
-                    'Light absorbency (for spotting or backup)',
-                    'Heavy absorbency (can replace pads/tampons)',
-                    'Different styles (bikini, brief, boy short)'
+                orientation: 'Looks just like regular underwear but has special absorbent layers built in to catch flow.',
+                variations: [
+                    { label: 'Light flow', desc: 'Good for backup or spotting.' },
+                    { label: 'Heavy flow', desc: 'Can replace pads or tampons completely.' },
+                    { label: 'Styles', desc: 'Bikini, boyshort, brief.' }
                 ],
-                usage: 'You wear them just like regular underwear. Afterward, you rinse them in cold water and then wash them in the machine.',
-                why: 'They feel very secure and you don\'t have to adjust anything during the day.',
-                reminder: 'They can feel a tiny bit thicker than regular underwear, but usually not much.'
+                usage: 'You wear them all day like normal underwear, then rinse in cold water and machine wash.',
+                feeling: 'Very secure. You don\'t have to adjust anything or carry wrappers to the bathroom.',
+                normalization: 'They can feel a tiny bit thicker than normal underwear, but usually people forget they are wearing them.'
             },
             tutorial: [
                 'Put them on just like regular underwear',
@@ -139,19 +150,19 @@ export const essentialsContent = {
         {
             id: 'heat',
             title: 'Heating Pads',
+            teaser: 'Soothing comfort for cramps',
             icon: '🔥',
-            image: null,
-            description: 'Used to help soothe cramps.',
+            image: require('../assets/heating pads.png'),
             sections: {
-                what: 'Heat helps relax the muscles in your uterus that are causing cramps.',
-                types: [
-                    'Electric heating pads',
-                    'Hot water bottles',
-                    'Stick-on heat patches (wearable under clothes)'
+                orientation: 'Heat helps relax the muscles in the uterus that cause cramps.',
+                variations: [
+                    { label: 'Electric pad', desc: 'Plugs into the wall.' },
+                    { label: 'Hot water bottle', desc: 'Filled with warm water.' },
+                    { label: 'Stick-on patch', desc: 'Warm patch worn under clothes at school.' }
                 ],
-                usage: 'Place it gently on your lower belly or lower back. Don\'t put it directly on skin if it\'s very hot—use a layer of clothes in between.',
-                why: 'It is a non-medicine way to feel a lot cleaner and more comfortable.',
-                reminder: 'Warm baths or showers work the same way!'
+                usage: 'Placed gently on the lower belly or lower back for 15-20 minutes.',
+                feeling: 'It creates a warm, cozy feeling that can make cramps hurt less.',
+                normalization: 'Non-medicine ways to feel better are very powerful.'
             },
             tutorial: [
                 'Choose your heat source (electric pad, hot water bottle, or heat patch)',
@@ -166,41 +177,118 @@ export const essentialsContent = {
     ],
     reproductiveHealth: {
         cycle: {
-            title: 'The Menstrual Cycle',
-            content: 'Your cycle is more than just your period. It\'s a continuous loop of hormones changing. Usually, it lasts about a month (`21-35 days`).\n\n1. **Menstruation (The Period):** The lining of the uterus sheds.\n2. **Follicular Phase:** The body prepares an egg.\n3. **Ovulation:** An egg is released.\n4. **Luteal Phase:** The body waits to see if pregnancy happened. If not, the cycle starts over.',
-            note: 'Every body follows its own rhythm. Irregular cycles are very common, specially in the first few years.'
+            title: 'Understanding Your Body', // NEW Title
+            teaser: 'Why things change over time', // New Teaser
+            // State-based tiles logic
+            states: [
+                {
+                    title: 'Before your period',
+                    text: 'Some people notice mood changes, feeling tired, or skin changes. Energy might feel lower.'
+                },
+                {
+                    title: 'During your period',
+                    text: 'Rest and comfort often matter more. You might feel relief as hormones shift.'
+                },
+                {
+                    title: 'After your period',
+                    text: 'Some people feel lighter, more energetic, and more social.'
+                },
+                {
+                    title: 'Between cycles',
+                    text: 'Things often feel more steady and balanced.'
+                }
+            ],
+            normalization: 'Every body follows its own rhythm. Irregular cycles are very common, especially in the first few years.'
         },
         discharge: {
             title: 'Vaginal Discharge',
-            content: 'Discharge is healthy fluid that keeps your vagina clean and moist. It changes throughout your cycle.',
-            types: [
-                '**Clear & Stretchy:** Often happens in the middle of your cycle (near ovulation).',
-                '**White or Creamy:** Common at the beginning or end of your cycle.',
-                '**Slightly Yellow (when dry):** Normal when it dries on underwear.'
+            teaser: 'Healthy patterns to know',
+            // Pattern-based logic
+            patterns: [
+                {
+                    label: 'Clear & Stretchy',
+                    desc: 'Often happens in the middle of your cycle. It is healthy.'
+                },
+                {
+                    label: 'White or Creamy',
+                    desc: 'Very common for many people at different times.'
+                },
+                {
+                    label: 'Slightly Yellow',
+                    desc: 'Can look this way when it dries on underwear.'
+                }
             ],
-            reminder: 'Bodies change everyday. Discharge can look different at different times, and that is just your body doing its job.'
+            normalization: 'Bodies change everyday. Variation is healthy and just your body doing its job.'
         }
     },
     stainRemoval: [
         {
-            title: 'Act Fast',
-            text: 'The sooner you get to the stain, the easier it is to remove. But don\'t panic if it\'s dried—it just takes a bit more patience.'
+            id: 'fresh',
+            title: 'Fresh Stains',
+            subtitle: 'Best results',
+            steps: [
+                'Rinse the stained area with cold water as soon as possible',
+                'Let the water run through the fabric from the back of the stain',
+                'Gently rub the fabric together to loosen the stain',
+                'Wash as usual after rinsing'
+            ],
+            goodToKnow: 'Hot water can set stains, so cold water works better first.'
         },
         {
-            title: 'Cold Water Only',
-            text: 'Always rinse blood with **COLD** water. Hot water "cooks" the proteins and sets the stain in, making it harder to get out.'
+            id: 'dried',
+            title: 'Dried Stains',
+            subtitle: 'Already set',
+            steps: [
+                'Soak the fabric in cold water for 30–60 minutes',
+                'Apply a small amount of gentle soap or detergent to the stain',
+                'Gently rub the area using your fingers',
+                'Rinse with cold water',
+                'Repeat if needed before washing'
+            ],
+            goodToKnow: 'Dried stains can take more than one try — that’s normal.'
         },
         {
-            title: 'Soap & Soak',
-            text: 'Gently rub some hand soap or laundry detergent into the spot. Let it soak in cold water for 15-30 minutes.'
+            id: 'soap',
+            title: 'Using Soap or Detergent',
+            subtitle: '',
+            steps: [
+                'Wet the stained area with cold water',
+                'Apply a small amount of mild soap or laundry detergent',
+                'Gently rub until the stain starts to fade',
+                'Rinse thoroughly with cold water'
+            ],
+            goodToKnow: 'Gentle soaps work well and are safer for most fabrics.'
         },
         {
-            title: 'Machine Wash',
-            text: 'After rinsing and soaking, you can toss it in the washing machine like normal.'
+            id: 'scrub',
+            title: 'Gentle Scrubbing',
+            subtitle: 'For tougher stains',
+            steps: [
+                'Wet the stain with cold water',
+                'Apply soap or detergent',
+                'Use a soft brush or clean cloth',
+                'Rub gently in small circles',
+                'Rinse and check before washing'
+            ],
+            goodToKnow: 'Be gentle — rough scrubbing can damage fabric.'
         },
         {
-            title: 'Be Kind to Yourself',
-            text: 'Leaks happen to literally everyone. It\'s not messy or "gross"—it\'s just biology. A stain doesn\'t ruin your day.'
+            id: 'prewash',
+            title: 'Before Putting It in the Wash',
+            subtitle: '',
+            steps: [
+                'Check that the stain is mostly gone',
+                'If it’s still visible, repeat the steps above',
+                'Wash only after the stain has faded'
+            ],
+            goodToKnow: 'Dryers can lock in stains if they aren’t fully removed.'
+        },
+        {
+            id: 'reassurance',
+            title: 'Reassurance',
+            subtitle: 'Always visible',
+            steps: [], // Empty steps means it's a static card
+            goodToKnow: 'Stains happen to a lot of people. It doesn’t mean you did anything wrong.'
         }
     ]
 };

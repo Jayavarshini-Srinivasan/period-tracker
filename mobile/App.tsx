@@ -26,12 +26,14 @@ export default function App() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [userId, setUserId] = useState<string>('');
 
-    // Initialize generic user ID on mount if not exists
+    // Initialize generic user ID and Age on mount if not exists
     React.useEffect(() => {
         const initUser = async () => {
             try {
                 // Check if we have a stored ID
                 const storedId = await AsyncStorage.getItem('period_tracker_user_id');
+                const storedAge = await AsyncStorage.getItem('period_tracker_age_range') as AgeRange;
+
                 if (storedId) {
                     setUserId(storedId);
                 } else {
@@ -39,6 +41,10 @@ export default function App() {
                     const newId = `user_${Math.floor(Math.random() * 1000000)}`;
                     await AsyncStorage.setItem('period_tracker_user_id', newId);
                     setUserId(newId);
+                }
+
+                if (storedAge) {
+                    setAgeRange(storedAge);
                 }
             } catch (e) {
                 console.error("Failed to initialize user", e);
@@ -77,6 +83,7 @@ export default function App() {
 
     const handleAgeSelect = async (age: AgeRange) => {
         setAgeRange(age);
+        await AsyncStorage.setItem('period_tracker_age_range', age as string);
         if (userId) {
             await api.registerUser(userId, age);
         }

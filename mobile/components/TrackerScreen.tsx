@@ -19,6 +19,23 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
     const [isPeriodDay, setIsPeriodDay] = useState<boolean | null>(null);
     const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
     const [selectedMood, setSelectedMood] = useState<Mood>(null);
+    // Track if user has manually touched form for the selected date
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+    // Update form when date changes
+    React.useEffect(() => {
+        const entry = getEntryForDate(selectedDate.getDate(), selectedDate.getMonth(), selectedDate.getFullYear());
+        if (entry) {
+            setIsPeriodDay(entry.isPeriodDay);
+            setSelectedSymptoms(entry.symptoms || []);
+            setSelectedMood(entry.mood || null);
+        } else {
+            setIsPeriodDay(null);
+            setSelectedSymptoms([]);
+            setSelectedMood(null);
+        }
+        setHasUnsavedChanges(false);
+    }, [selectedDate, trackerData]);
 
     const symptoms = [
         { id: 'cramps', label: 'cramps' },
@@ -50,12 +67,29 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
         return day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
     };
 
-    const getEntryForDate = (day: number) => {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isSelected = (day: number) => {
+        return day === selectedDate.getDate();
+    };
+
+    const getEntryForDate = (day: number, m = month, y = year) => {
+        const dateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         return trackerData.find(e => e.date === dateStr);
     };
 
+    const handlePrevMonth = () => {
+        setSelectedDate(new Date(year, month - 1, 1));
+    };
+
+    const handleNextMonth = () => {
+        setSelectedDate(new Date(year, month + 1, 1));
+    };
+
+    const handleDayPress = (day: number) => {
+        setSelectedDate(new Date(year, month, day));
+    };
+
     const toggleSymptom = (symptomId: string) => {
+        setHasUnsavedChanges(true);
         setSelectedSymptoms(prev =>
             prev.includes(symptomId)
                 ? prev.filter(s => s !== symptomId)
@@ -63,10 +97,20 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
         );
     };
 
+    const handleSetIsPeriodDay = (val: boolean) => {
+        setHasUnsavedChanges(true);
+        setIsPeriodDay(val);
+    };
+
+    const handleSetMood = (val: Mood) => {
+        setHasUnsavedChanges(true);
+        setSelectedMood(val);
+    };
+
     const handleSave = () => {
         if (isPeriodDay === null) return;
 
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
         onUpdateEntry({
             date: dateStr,
             isPeriodDay,
@@ -74,7 +118,32 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
             mood: selectedMood,
         });
 
-        Alert.alert('Saved', 'Your entry has been saved.');
+        Alert.alert('Saved', 'Entry updated successfully.');
+        setHasUnsavedChanges(false);
+    };
+
+    const getPrediction = () => {
+        // Find last period day
+        // Sort data by date desc
+        const sorted = [...trackerData]
+            .filter(e => e.isPeriodDay)
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        if (sorted.length === 0) return "Log your first period to see predictions.";
+
+        const lastPeriod = new Date(sorted[0].date);
+        const nextPeriod = new Date(lastPeriod);
+        nextPeriod.setDate(lastPeriod.getDate() + 28); // Simple 28 day cycle for MVP
+
+        const diffTime = nextPeriod.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < -5) return "Ensure you're logging your period days.";
+        if (diffDays < 0) return "Your period might be due any day now.";
+        if (diffDays === 0) return "Your period is predicted for today.";
+        if (diffDays <= 5) return `Period likely starting in ${diffDays} days.`;
+
+        return `Next cycle predicted around ${nextPeriod.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}.`;
     };
 
     return (
@@ -82,15 +151,23 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Tracker</Text>
-                <Text style={styles.headerSubtitle}>Track how you're feeling today</Text>
+                <Text style={styles.headerSubtitle}>
+                    {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                </Text>
             </View>
 
             {/* Calendar */}
             <View style={styles.card}>
                 <View style={styles.calendarHeader}>
+                    <TouchableOpacity onPress={handlePrevMonth} style={styles.navButton}>
+                        <Text style={styles.navButtonText}>←</Text>
+                    </TouchableOpacity>
                     <Text style={styles.monthTitle}>
                         {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                     </Text>
+                    <TouchableOpacity onPress={handleNextMonth} style={styles.navButton}>
+                        <Text style={styles.navButtonText}>→</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.daysHeader}>
@@ -107,47 +184,55 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
                         const day = i + 1;
                         const entry = getEntryForDate(day);
                         const isTodayDate = isToday(day);
+                        const isSelectedDate = isSelected(day);
 
                         return (
-                            <View
+                            <TouchableOpacity
                                 key={day}
+                                onPress={() => handleDayPress(day)}
                                 style={[
                                     styles.cell,
-                                    isTodayDate && styles.todayCell,
-                                    entry?.isPeriodDay && styles.periodCell,
+                                    isSelectedDate && styles.selectedCell, // Selected takes precedence for bg
+                                    (!isSelectedDate && isTodayDate) && styles.todayCell,
+                                    (!isSelectedDate && !isTodayDate && entry?.isPeriodDay) && styles.periodCell,
                                 ]}
                             >
                                 <Text style={[
                                     styles.cellText,
-                                    isTodayDate && styles.todayText
+                                    isSelectedDate && styles.selectedText,
+                                    (!isSelectedDate && isTodayDate) && styles.todayText
                                 ]}>
                                     {day}
                                 </Text>
+                                {/* Dot logic: Show if period, but handle color contrast */}
                                 {entry?.isPeriodDay && (
                                     <View style={styles.periodDotContainer}>
-                                        <View style={styles.periodDot} />
+                                        <View style={[
+                                            styles.periodDot,
+                                            isSelectedDate && { backgroundColor: 'white' }
+                                        ]} />
                                     </View>
                                 )}
-                            </View>
+                            </TouchableOpacity>
                         );
                     })}
                 </View>
 
                 <View style={styles.predictionBox}>
                     <Text style={styles.predictionText}>
-                        Based on past entries, your period may be coming in the next few days
+                        {getPrediction()}
                     </Text>
                 </View>
             </View>
 
-            {/* Today's tracking */}
+            {/* Entry Form */}
             <View style={styles.section}>
                 {/* Period day question */}
                 <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Is today a period day?</Text>
+                    <Text style={styles.cardTitle}>Period today?</Text>
                     <View style={styles.buttonRow}>
                         <TouchableOpacity
-                            onPress={() => setIsPeriodDay(true)}
+                            onPress={() => handleSetIsPeriodDay(true)}
                             style={[
                                 styles.choiceButton,
                                 isPeriodDay === true ? styles.activeButton : styles.inactiveButton
@@ -159,7 +244,7 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
                             ]}>Yes</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            onPress={() => setIsPeriodDay(false)}
+                            onPress={() => handleSetIsPeriodDay(false)}
                             style={[
                                 styles.choiceButton,
                                 isPeriodDay === false ? styles.activeButton : styles.inactiveButton
@@ -175,7 +260,7 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
 
                 {/* Symptoms */}
                 <View style={styles.card}>
-                    <Text style={styles.cardTitle}>Any symptoms? (optional)</Text>
+                    <Text style={styles.cardTitle}>Symptoms</Text>
                     <View style={styles.tagsContainer}>
                         {symptoms.map(symptom => (
                             <TouchableOpacity
@@ -199,12 +284,12 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
 
                 {/* Mood */}
                 <View style={styles.card}>
-                    <Text style={styles.cardTitle}>How are you feeling?</Text>
+                    <Text style={styles.cardTitle}>Mood</Text>
                     <View style={styles.moodGrid}>
                         {moods.map(mood => (
                             <TouchableOpacity
                                 key={mood.id}
-                                onPress={() => setSelectedMood(mood.id)}
+                                onPress={() => handleSetMood(mood.id)}
                                 style={[
                                     styles.moodButton,
                                     selectedMood === mood.id ? styles.activeMood : styles.inactiveMood
@@ -218,14 +303,15 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
                 </View>
 
                 {/* Save button */}
-                {isPeriodDay !== null && (
-                    <TouchableOpacity
-                        onPress={handleSave}
-                        style={styles.saveButton}
-                    >
-                        <Text style={styles.saveButtonText}>Save today's entry</Text>
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                    onPress={handleSave}
+                    style={[styles.saveButton, !hasUnsavedChanges && { opacity: 0.8, backgroundColor: '#d8b4fe' }]}
+                    disabled={!hasUnsavedChanges}
+                >
+                    <Text style={styles.saveButtonText}>
+                        {hasUnsavedChanges ? "Save Changes" : "Saved"}
+                    </Text>
+                </TouchableOpacity>
             </View>
         </ScrollView>
     );
@@ -234,11 +320,11 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FAF5FF', // background approximate
+        backgroundColor: '#FAF5FF',
     },
     contentContainer: {
         padding: CALENDAR_PADDING,
-        paddingBottom: 100, // space for bottom nav
+        paddingBottom: 100,
     },
     header: {
         marginBottom: 24,
@@ -267,8 +353,18 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     calendarHeader: {
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 16,
+        paddingHorizontal: 8,
+    },
+    navButton: {
+        padding: 8,
+    },
+    navButtonText: {
+        fontSize: 18,
+        color: '#7e22ce',
     },
     monthTitle: {
         fontSize: 18,
@@ -290,8 +386,6 @@ const styles = StyleSheet.create({
     grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 0, // we use fixed width for cells, or we can use justifyContent space-between
-        // Actually with gap=0 we can control spacing manually via width if needed, but let's try justifyContent
         justifyContent: 'space-between',
     },
     cell: {
@@ -307,6 +401,9 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#D8B4FE',
     },
+    selectedCell: {
+        backgroundColor: '#581c87',
+    },
     periodCell: {
         backgroundColor: 'rgba(216, 180, 254, 0.5)',
     },
@@ -317,6 +414,11 @@ const styles = StyleSheet.create({
     },
     todayText: {
         color: '#581c87',
+        fontWeight: 'bold',
+        opacity: 1,
+    },
+    selectedText: {
+        color: 'white',
         fontWeight: 'bold',
         opacity: 1,
     },
@@ -331,7 +433,7 @@ const styles = StyleSheet.create({
         height: 4,
         backgroundColor: '#9333ea',
         borderRadius: 2,
-        marginTop: 16, // push it down below text
+        marginTop: 16,
     },
     predictionBox: {
         marginTop: 16,
@@ -343,7 +445,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 12,
         color: '#7e22ce',
-        opacity: 0.6,
+        opacity: 0.8,
+        lineHeight: 18,
     },
     section: {
         gap: 20,

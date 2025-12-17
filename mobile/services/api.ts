@@ -1,9 +1,16 @@
-import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import type { AgeRange, Mood, Question, TrackerEntry, Answer } from '../types';
 
-// 172.16.10.131 is your machine's local IP detected from Expo logs. 
-// This allows both Emulators and Physical Devices (on same Wifi) to connect.
-const BASE_URL = 'http://172.16.18.228:5000/api';
+const getBaseUrl = () => {
+    // If I'm running on a physical device via Expo Go, this finds the host machine's IP
+    const hostUri = Constants.expoConfig?.hostUri;
+    const localhost = hostUri ? hostUri.split(':')[0] : 'localhost';
+
+    // Fallback to localhost if hostUri is undefined (e.g. Simulator)
+    return `http://${localhost}:5000/api`;
+}
+
+const BASE_URL = getBaseUrl();
 
 export const api = {
     // Health Check

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { essentialsContent } from '../data/essentialsContent';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
 
 export default function EssentialsDetailScreen({ essentialId, onBack }: Props) {
     const product = essentialsContent.products.find(p => p.id === essentialId);
+    const [showTutorial, setShowTutorial] = useState(false);
 
     if (!product) {
         return (
@@ -31,40 +32,71 @@ export default function EssentialsDetailScreen({ essentialId, onBack }: Props) {
                 <Text style={styles.headerTitle}>{product.title}</Text>
             </View>
 
-            {/* Main Intro with Image */}
-            <View style={styles.introCard}>
+            {/* Main Image */}
+            <View style={styles.imageContainer}>
                 {image ? (
                     <Image source={image} style={styles.productImage} resizeMode="contain" />
                 ) : (
                     <Text style={styles.introIcon}>{product.icon}</Text>
                 )}
-                <Text style={styles.introText}>{product.description}</Text>
             </View>
 
-            {/* Section A: What this is */}
+            {/* Orientation */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>What is it?</Text>
-                <Text style={styles.sectionText}>{sections.what}</Text>
+                <Text style={styles.sectionText}>{sections.orientation}</Text>
             </View>
 
-            {/* Section B: Types */}
+            {/* Variations - Interactive Chips */}
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Common Options</Text>
-                {sections.types.map((type, index) => (
-                    <View key={index} style={styles.bulletRow}>
-                        <Text style={styles.bullet}>•</Text>
-                        <Text style={styles.sectionText}>{type}</Text>
-                    </View>
-                ))}
+                <Text style={styles.sectionTitle}>Common Variations</Text>
+                <View style={styles.chipContainer}>
+                    {sections.variations.map((v, i) => (
+                        <TouchableOpacity
+                            key={i}
+                            style={styles.chip}
+                            onPress={() => Alert.alert(v.label, v.desc)}
+                        >
+                            <Text style={styles.chipText}>{v.label}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
             </View>
 
-            {/* NEW: Tutorial Section */}
-            {tutorial && tutorial.length > 0 && (
-                <View style={styles.tutorialSection}>
-                    <Text style={styles.tutorialTitle}>How to Use It</Text>
-                    <View style={styles.tutorialCard}>
+            {/* Usage - Experience based */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>How people usually use it</Text>
+                <Text style={styles.sectionText}>{sections.usage}</Text>
+            </View>
+
+            {/* Feeling - Emotional */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>How it different options feel</Text>
+                <Text style={styles.sectionText}>{sections.feeling}</Text>
+            </View>
+
+            {/* Normalization Card */}
+            <View style={styles.normalizationCard}>
+                <Text style={styles.normalizationIcon}>💜</Text>
+                <Text style={styles.normalizationText}>{sections.normalization}</Text>
+            </View>
+
+            {/* Hidden Tutorial Toggle */}
+            <View style={styles.tutorialContainer}>
+                <TouchableOpacity
+                    style={styles.tutorialButton}
+                    onPress={() => setShowTutorial(!showTutorial)}
+                >
+                    <Text style={styles.tutorialButtonText}>
+                        {showTutorial ? `Hide "How to use"` : `See how to use ${product.title}`}
+                    </Text>
+                    <Text style={styles.tutorialArrow}>{showTutorial ? '▲' : '▼'}</Text>
+                </TouchableOpacity>
+
+                {showTutorial && (
+                    <View style={styles.tutorialSteps}>
                         {tutorial.map((step, index) => (
-                            <View key={index} style={styles.tutorialStep}>
+                            <View key={index} style={styles.stepRow}>
                                 <View style={styles.stepNumber}>
                                     <Text style={styles.stepNumberText}>{index + 1}</Text>
                                 </View>
@@ -72,25 +104,7 @@ export default function EssentialsDetailScreen({ essentialId, onBack }: Props) {
                             </View>
                         ))}
                     </View>
-                </View>
-            )}
-
-            {/* Section C: How people use it */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>General Usage</Text>
-                <Text style={styles.sectionText}>{sections.usage}</Text>
-            </View>
-
-            {/* Section D: Why choose this */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Why people like it</Text>
-                <Text style={styles.sectionText}>{sections.why}</Text>
-            </View>
-
-            {/* Section E: Reminder */}
-            <View style={styles.reminderCard}>
-                <Text style={styles.reminderIcon}>💜</Text>
-                <Text style={styles.reminderText}>{sections.reminder}</Text>
+                )}
             </View>
 
             <View style={{ height: 40 }} />
@@ -126,31 +140,18 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#581c87',
     },
-    introCard: {
-        backgroundColor: 'white',
-        padding: 24,
-        borderRadius: 24,
+    imageContainer: {
         alignItems: 'center',
         marginBottom: 24,
-        shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
+        height: 140,
+        justifyContent: 'center',
     },
     productImage: {
-        width: 120,
-        height: 120,
-        marginBottom: 16,
+        width: 140,
+        height: 140,
     },
     introIcon: {
-        fontSize: 48,
-        marginBottom: 16,
-    },
-    introText: {
-        fontSize: 18,
-        textAlign: 'center',
-        color: '#6b21a8',
-        fontWeight: '500',
+        fontSize: 64,
     },
     section: {
         marginBottom: 24,
@@ -166,52 +167,89 @@ const styles = StyleSheet.create({
         color: '#4b5563',
         lineHeight: 24,
     },
-    bulletRow: {
+    chipContainer: {
         flexDirection: 'row',
-        marginBottom: 8,
-        paddingRight: 16,
+        flexWrap: 'wrap',
+        gap: 8,
     },
-    bullet: {
-        fontSize: 16,
-        color: '#7e22ce',
-        marginRight: 8,
-        marginTop: 2,
-    },
-    tutorialSection: {
-        marginBottom: 24,
-    },
-    tutorialTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#581c87',
-        marginBottom: 12,
-    },
-    tutorialCard: {
+    chip: {
         backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 20,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 100,
+        borderWidth: 1,
+        borderColor: '#e9d5ff',
         shadowColor: '#000',
-        shadowOpacity: 0.03,
-        shadowRadius: 4,
+        shadowOpacity: 0.02,
+        shadowRadius: 2,
         elevation: 1,
     },
-    tutorialStep: {
+    chipText: {
+        color: '#6b21a8',
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    normalizationCard: {
+        backgroundColor: '#f3e8ff',
+        padding: 20,
+        borderRadius: 20,
+        flexDirection: 'row',
+        gap: 16,
+        alignItems: 'center',
+        marginBottom: 32,
+    },
+    normalizationIcon: {
+        fontSize: 24,
+    },
+    normalizationText: {
+        flex: 1,
+        fontSize: 15,
+        color: '#581c87',
+        fontStyle: 'italic',
+        lineHeight: 22,
+    },
+    tutorialContainer: {
+        backgroundColor: 'white',
+        borderRadius: 24,
+        overflow: 'hidden',
+    },
+    tutorialButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 20,
+        backgroundColor: 'white',
+    },
+    tutorialButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#7e22ce',
+    },
+    tutorialArrow: {
+        fontSize: 14,
+        color: '#d8b4fe',
+    },
+    tutorialSteps: {
+        padding: 24,
+        paddingTop: 0,
+        backgroundColor: 'white',
+    },
+    stepRow: {
         flexDirection: 'row',
         marginBottom: 16,
-        alignItems: 'flex-start',
+        gap: 12,
     },
     stepNumber: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
+        width: 24,
+        height: 24,
+        borderRadius: 12,
         backgroundColor: '#f3e8ff',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 12,
         marginTop: 2,
     },
     stepNumberText: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '700',
         color: '#7e22ce',
     },
@@ -221,27 +259,8 @@ const styles = StyleSheet.create({
         color: '#4b5563',
         lineHeight: 22,
     },
-    reminderCard: {
-        backgroundColor: '#f0fdf4',
-        padding: 20,
-        borderRadius: 16,
-        flexDirection: 'row',
-        gap: 12,
-        alignItems: 'flex-start',
-    },
-    reminderIcon: {
-        fontSize: 20,
-    },
-    reminderText: {
-        flex: 1,
-        fontSize: 15,
-        color: '#166534',
-        lineHeight: 22,
-        fontStyle: 'italic',
-    },
     backButton: {
         color: '#7e22ce',
-        fontSize: 16,
         marginTop: 20,
     }
 });
