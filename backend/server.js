@@ -249,6 +249,11 @@ app.post('/api/feed/questions/:questionId/answers/:answerId/helpful', async (req
 });
 
 // Start Server
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Backend running on http://0.0.0.0:${PORT}`);
-});
+// Start Server
+if (require.main === module) {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Backend running on http://0.0.0.0:${PORT}`);
+    });
+}
+
+module.exports = app;
