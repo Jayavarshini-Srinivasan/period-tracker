@@ -7,8 +7,17 @@ const path = require('path');
 const serviceAccountPath = path.join(__dirname, 'period-tracker-53036-firebase-adminsdk-fbsvc-543fac789c.json');
 
 try {
+  let serviceAccount;
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    // Vercel / Production: Use environment variable
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  } else {
+    // Local Development: Use file
+    serviceAccount = require(serviceAccountPath);
+  }
+
   admin.initializeApp({
-    credential: admin.credential.cert(require(serviceAccountPath))
+    credential: admin.credential.cert(serviceAccount)
   });
   console.log('Firebase Admin Initialized successfully');
 } catch (error) {
