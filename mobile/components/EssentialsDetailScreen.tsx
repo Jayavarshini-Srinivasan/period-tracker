@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Modal, Pressable } from 'react-native';
 import { essentialsContent } from '../data/essentialsContent';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 export default function EssentialsDetailScreen({ essentialId, onBack }: Props) {
     const product = essentialsContent.products.find(p => p.id === essentialId);
     const [showTutorial, setShowTutorial] = useState(false);
+    const [selectedVariation, setSelectedVariation] = useState<{ label: string; desc: string } | null>(null);
 
     if (!product) {
         return (
@@ -55,7 +56,7 @@ export default function EssentialsDetailScreen({ essentialId, onBack }: Props) {
                         <TouchableOpacity
                             key={i}
                             style={styles.chip}
-                            onPress={() => Alert.alert(v.label, v.desc)}
+                            onPress={() => setSelectedVariation(v)}
                         >
                             <Text style={styles.chipText}>{v.label}</Text>
                         </TouchableOpacity>
@@ -108,6 +109,27 @@ export default function EssentialsDetailScreen({ essentialId, onBack }: Props) {
             </View>
 
             <View style={{ height: 40 }} />
+
+            {/* Custom Modal for Web Compatibility */}
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={!!selectedVariation}
+                onRequestClose={() => setSelectedVariation(null)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>{selectedVariation?.label}</Text>
+                        <Text style={styles.modalText}>{selectedVariation?.desc}</Text>
+                        <Pressable
+                            style={styles.modalButton}
+                            onPress={() => setSelectedVariation(null)}
+                        >
+                            <Text style={styles.modalButtonText}>Close</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
         </ScrollView>
     );
 }
@@ -262,5 +284,53 @@ const styles = StyleSheet.create({
     backButton: {
         color: '#7e22ce',
         marginTop: 20,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 24,
+        padding: 24,
+        width: '100%',
+        maxWidth: 400,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#581c87',
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    modalText: {
+        fontSize: 16,
+        color: '#4b5563',
+        textAlign: 'center',
+        marginBottom: 24,
+        lineHeight: 24,
+    },
+    modalButton: {
+        backgroundColor: '#f3e8ff',
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 100,
+    },
+    modalButtonText: {
+        color: '#6b21a8',
+        fontWeight: '600',
+        fontSize: 16,
     }
 });

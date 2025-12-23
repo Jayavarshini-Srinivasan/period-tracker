@@ -118,7 +118,7 @@ export default function TrackerScreen({ trackerData, onUpdateEntry }: TrackerScr
             mood: selectedMood,
         });
 
-        Alert.alert('Saved', 'Entry updated successfully.');
+
         setHasUnsavedChanges(false);
     };
 
