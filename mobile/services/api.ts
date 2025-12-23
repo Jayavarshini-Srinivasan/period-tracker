@@ -2,12 +2,7 @@ import Constants from 'expo-constants';
 import type { AgeRange, Mood, Question, TrackerEntry, Answer } from '../types';
 
 const getBaseUrl = () => {
-    // If I'm running on a physical device via Expo Go, this finds the host machine's IP
-    const hostUri = Constants.expoConfig?.hostUri;
-    const localhost = hostUri ? hostUri.split(':')[0] : 'localhost';
-
-    // Fallback to localhost if hostUri is undefined (e.g. Simulator)
-    return `http://${localhost}:5000/api`;
+    return 'https://period-tracker-topaz.vercel.app/api';
 }
 
 const BASE_URL = getBaseUrl();

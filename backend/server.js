@@ -25,6 +25,11 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });
 });
 
+// 0. Root Welcome
+app.get('/', (req, res) => {
+  res.send('<h1>Period Tracker API</h1><p>Server is running. Access endpoints at <a href="/api/health">/api/health</a></p>');
+});
+
 // 2. Auth Placeholder
 // Since we are using Firestore "Anonymous/Standard", client usually sends a token.
 // For now, we assume public access or we can add a middleware later to verify ID tokens.
